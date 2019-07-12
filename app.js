@@ -1,23 +1,50 @@
-const memoryjs = require('memoryjs');
+var edge = require('edge-js');
 
-const processName = "ffxiv_dx11.exe";
-let ffxiv_process_id;
-let ffxiv_parent_process_id;
-let ffxiv_process_handle;
-
-const processArray = memoryjs.getProcesses();
-for(x=0; x<processArray.length; x++){
-    if(processArray[x].szExeFile == processName){
-        ffxiv_process_id = processArray[x].th32ProcessID;
-        ffxiv_parent_process_id = processArray[x].th32ParentProcessID;
+var helloWorld = edge.func(`
+    async (input) => { 
+        return ".NET Welcomes " + input.ToString(); 
     }
-}
+`);
 
-const value = memoryjs.openProcess(ffxiv_process_id)
+helloWorld('JavaScript', function (error, result) {
+    if (error) throw error;
+    console.log(result);
+});
 
-ffxiv_process_handle = value.handle;
 
-let checkmemory = memoryjs.readMemory(ffxiv_process_handle, "0x8", "int")
-//console.dir(value);
-console.log(checkmemory)
-//const buffer = memoryjs.readBuffer()
+//memory.js attempts
+
+
+// const memoryjs = require('memoryjs');
+
+// //set for dx11 client
+// const processName = "ffxiv_dx11.exe";
+
+// //check all processes to see if it's actually running
+// let processArray = memoryjs.getProcesses();
+
+// let foundProcess = false;
+// for(x=0; x<processArray.length; x++){
+//     if(processArray[x].szExeFile == processName){
+//         foundProcess = true;
+//     }
+// }
+
+// if(!foundProcess){
+//     return console.log("** FFXIV is not running. Please boot the game in order to use application** ");
+// }
+
+// //open the individual process
+// const processObject = memoryjs.openProcess(processName);
+// console.dir(processObject);
+
+// //set simple cariables from id
+// const ffxiv_process_id = processObject.th32ProcessID;
+// const ffxiv_parent_process_id = processObject.th32ParentProcessID;
+// const ffxiv_process_handle = processObject.handle;
+
+// //read mememory location of ffxiv
+// let test = memoryjs.readMemory(ffxiv_process_handle, "2C08BEE2792", memoryjs.STRING);
+
+// //log results
+// console.dir(JSON.stringify(test, null, 4));
