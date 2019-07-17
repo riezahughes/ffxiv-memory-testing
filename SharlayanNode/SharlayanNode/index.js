@@ -9,16 +9,18 @@ var test = edge.func({
         using Sharlayan.Core;
         using Sharlayan.Models;
         using Sharlayan.Models.ReadResults;
+		using System.Collections.Generic;
+		using Sharlayan.Utilities;
 
         public class Startup
         {
             public async Task<object> Invoke(object input)
             {
                 Process[] processes = Process.GetProcessesByName("ffxiv_dx11");
-				System.Console.WriteLine("Doing it");
+				System.Console.WriteLine("Starting...");
 				if (processes.Length != 0)
 				{
-					System.Console.WriteLine("Setting Process");
+					System.Console.WriteLine("Setting up Memory Reader..");
 
 					string gameLang = "English";
 					bool useLocalCache = false;
@@ -34,7 +36,10 @@ var test = edge.func({
 
 					//console.log(procModel);
 					MemoryHandler.Instance.SetProcess(procModel, gameLang, patchVersion, useLocalCache);
+					System.Console.WriteLine("All Systems Go!");
 					Entrance.MemQuery();
+				}else{
+					System.Console.WriteLine("Please Log in before running");
 				}
 				
 				return null;
@@ -48,7 +53,8 @@ var test = edge.func({
 					Console.WriteLine("What are you looking for: ");
 					Console.ReadLine();
 					System.Console.WriteLine(Helper.GetName());
-					System.Console.WriteLine(Helper.GetInv());
+					System.Console.WriteLine(Helper.GetLocation());
+					// System.Console.WriteLine(Helper.GetInv());
 					goto Start;
 				}
 			}
@@ -62,6 +68,23 @@ var test = edge.func({
 					Thread.Sleep(1000);
 					CurrentPlayerResult res = Reader.GetCurrentPlayer();
 					return res.CurrentPlayer.Name;
+				}
+
+				public static string GetLocation()
+				{
+					string Map = null;
+
+					System.Console.WriteLine("Getting Location");
+					Thread.Sleep(1000);
+					ActorResult res = Reader.GetActors();
+					foreach(KeyValuePair<uint, ActorItem> npc in res.CurrentNPCs) {
+						Sharlayan.Models.XIVDatabase.MapItem MapFind = Sharlayan.Utilities.ZoneLookup.GetZoneInfo(npc.Value.MapTerritory);
+						Map = MapFind.Name.English;
+						break;
+					}
+
+					return Map;
+
 				}
 				
 				public static string GetInv()
